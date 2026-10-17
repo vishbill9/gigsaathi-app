@@ -44,6 +44,7 @@ export async function loadRemote() {
     S.ledger = data.entries;
     S.moods = data.moods;
     S.docSummary = data.docSummary;
+    S.auth = data.auth || S.auth;
     return true;
   } catch {
     return false;
@@ -54,4 +55,5 @@ export const saveEntry = async entry => json(await send('POST', '/api/entries', 
 export const removeEntry = async id => json(await send('DELETE', `/api/entries/${id}`));
 export const saveMood = async (date, score) => json(await send('POST', '/api/moods', { date, score }));
 export const saveDocSummary = async text => json(await send('PUT', '/api/doc-summary', { text }));
+export const logout = async () => json(await send('POST', '/api/logout', {}));
 export const deleteAllData = async () => json(await send('DELETE', '/api/me'));
