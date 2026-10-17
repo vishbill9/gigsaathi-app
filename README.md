@@ -22,12 +22,14 @@ Connected on purpose: earnings data feeds the coach and the complaint; the docum
 ```
 cp .env.example .env     # set OLLAMA_API_KEY and OLLAMA_MODEL
 npm start                # Node 22.13+, no npm install needed
-npm test                 # 42 tests, no network needed
+npm test                 # 49 tests, no network needed
 ```
 
 On start the server makes one real model call and prints `AI check OK` or `AI check FAILED` with the reason and the model names your key can use. You can also open `/api/health/model` at any time.
 
-No login: each browser gets an anonymous session (random token in an HttpOnly cookie; only its hash is stored). Evaluators can use the app immediately, no credentials needed.
+Two ways in:
+- **Guest (default):** each browser gets an anonymous session (random token in an HttpOnly cookie; only its hash is stored). No credentials needed.
+- **Sign in with Google (optional):** OAuth 2.0 / OpenID Connect authorization-code flow with PKCE, state and nonce. Shows only when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Signing in keeps your data on every device, and anything you saved as a guest is merged into the account. Only name and email are stored. Log out ends that device's session only.
 
 ## For evaluators: 5-minute walkthrough
 
@@ -49,6 +51,8 @@ No login: each browser gets an anonymous session (random token in an HttpOnly co
 | `PORT` | 3000 | Set automatically by most hosts. |
 | `TRUST_PROXY` | 0 | Set to 1 behind a proxy so rate limiting sees real client IPs. |
 | `RATE_LIMIT_PER_MIN` | 40 | AI calls per IP per minute (data calls get 4x). |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | none | Enables Sign in with Google. Create a "Web application" OAuth client and add `<your-url>/auth/google/callback` as an authorised redirect URI. |
+| `PUBLIC_URL` | auto | Public base URL used for the redirect URI (Render's own URL is detected automatically). |
 
 ## Deploy
 
@@ -65,7 +69,8 @@ server.js          HTTP wiring: security headers, routing, rate limits, streamin
 lib/prompts.js     system prompts per module and language (context is fenced as data)
 lib/ollama.js      Ollama Cloud client (stream, one-shot, model check)
 lib/db.js          SQLite store with migrations (swap-able interface)
-lib/session.js     anonymous cookie sessions (token hash only)
+lib/session.js     cookie sessions (token hash only)
+lib/oauth.js       Google sign-in: OIDC code flow with PKCE, state and nonce
 lib/validate.js    strict validation of every request
 lib/parse.js       free text to ledger entry (model first, regex only as a clearly-labelled backup)
 lib/route.js       "just talk" router (model first, keyword backup)
@@ -85,7 +90,7 @@ If the model cannot be reached the app says so. It never shows a canned answer a
 - API key server-side only; CSP with no inline scripts or styles; nosniff, frame and referrer protections.
 - Strict validation, size limits, per-IP rate limits, parameterised SQL, escaped output (model text can never become HTML).
 - Prompt-injection hardening: pasted documents and app context are fenced and marked as data.
-- No personal identifiers collected. Workers can download (`/api/export`) or permanently delete (`/api/me`) all their data.
+- Guests give no personal information; Google sign-in stores only name and email. Workers can download (`/api/export`) or permanently delete (`/api/me`) all their data.
 - Chat messages are not stored; only earnings entries, moods and the document summary are.
 
 ## Accessibility
