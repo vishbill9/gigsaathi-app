@@ -14,6 +14,7 @@ import { initSchemes } from './schemes.js';
 import { initSos, renderSos } from './sos.js';
 import { initHero, renderHero } from './hero.js';
 import { initEasterEgg } from './fx.js';
+import { initAccount } from './account.js';
 
 const CHIPS = {
   earnings: ['Explain my week', 'Which day was my worst and why?', 'How can I cut my fuel cost?'],
@@ -51,6 +52,7 @@ initSchemes();
 initSos();
 initHero();
 initEasterEgg();
+initAccount();
 
 $('#lang').value = S.lang;
 applyLang();
