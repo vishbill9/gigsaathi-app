@@ -24,9 +24,16 @@ function render() {
     box.append(who, out);
   } else {
     const a = document.createElement('a');
-    a.className = 'btn ghost';
+    a.className = 'btn ghost gbtn';
     a.href = '/auth/google';
-    a.textContent = 'Sign in with Google';
+    const logo = document.createElement('img');
+    logo.src = '/img/google.svg';
+    logo.alt = '';
+    logo.width = logo.height = 20;
+    const label = document.createElement('span');
+    label.append('Sign in', Object.assign(document.createElement('span'), { className: 'lbl', textContent: ' with Google' }));
+    a.append(logo, label);
+    a.setAttribute('aria-label', 'Sign in with Google');
     a.title = 'Optional. Keeps your data on all your devices.';
     box.append(a);
   }
