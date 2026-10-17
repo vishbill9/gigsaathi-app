@@ -44,7 +44,11 @@ a { color: var(--primary); }
 .logo { font-size: 1.3rem; font-weight: 600; letter-spacing: -.01em; }
 .logo b { color: var(--primary); }
 .mascot { font-size: 1.9rem; line-height: 1; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--soft); cursor: pointer; }
-.controls { display: flex; gap: .5rem; align-items: center; }
+.controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: flex-end; }
+.account { display: flex; gap: .5rem; align-items: center; }
+.account[hidden] { display: none; }
+.account .who { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 .hero { padding-block: .5rem 1rem; }
 .greet { font-size: clamp(1.7rem, 5vw, 2.2rem); font-weight: 650; letter-spacing: -.02em; }
 .tagline { color: var(--muted); font-size: 1.1rem; margin-bottom: 1rem; }
