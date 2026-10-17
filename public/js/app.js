@@ -52,7 +52,6 @@ initSchemes();
 initSos();
 initHero();
 initEasterEgg();
-initAccount();
 
 $('#lang').value = S.lang;
 applyLang();
@@ -71,5 +70,6 @@ $('#big').addEventListener('click', () => {
 });
 
 if (!(await loadRemote())) toast('Could not load your saved data. Please check your connection.');
+initAccount(); // after loadRemote so the sign-in state is known
 renderLedger();
 document.dispatchEvent(new CustomEvent('data:changed'));
