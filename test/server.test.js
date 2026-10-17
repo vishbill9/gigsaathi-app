@@ -97,7 +97,7 @@ test('parse and route endpoints return structured results', async () => {
 test('read-only visitors get an empty state and no cookie', async () => {
   const { base, close } = await boot();
   const res = await fetch(`${base}/api/state`);
-  assert.deepEqual(await res.json(), { entries: [], moods: [], docSummary: '' });
+  assert.deepEqual(await res.json(), { entries: [], moods: [], docSummary: '', auth: { enabled: false, user: null } });
   assert.equal(res.headers.get('set-cookie'), null);
   await close();
 });
@@ -108,7 +108,7 @@ test('entries are saved to the database and isolated per worker', async () => {
   assert.equal(created.status, 201);
   const cookie = cookieOf(created);
   assert.match(created.headers.get('set-cookie'), /HttpOnly/);
-  assert.match(created.headers.get('set-cookie'), /SameSite=Strict/);
+  assert.match(created.headers.get('set-cookie'), /SameSite=Lax/);
   const saved = await created.json();
 
   const mine = await (await fetch(`${base}/api/state`, { headers: { Cookie: cookie } })).json();
