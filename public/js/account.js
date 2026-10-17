@@ -12,7 +12,10 @@ function render() {
   if (user) {
     const who = document.createElement('span');
     who.className = 'who';
-    who.textContent = user.name;
+    const label = user.name || user.email || '?';
+    const avatar = Object.assign(document.createElement('span'), { className: 'avatar', textContent: label.trim()[0].toUpperCase() });
+    avatar.setAttribute('aria-hidden', 'true');
+    who.append(avatar, Object.assign(document.createElement('span'), { className: 'nm', textContent: label.split(' ')[0] }));
     who.title = user.email;
     const out = document.createElement('button');
     out.type = 'button';
