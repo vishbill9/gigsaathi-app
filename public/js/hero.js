@@ -35,3 +35,10 @@ async function talk(text) {
   }
   if (route.module === 'surprise') return surprise('RANDOM', message);
   await ask(route.module, message);
+}
+
+export function initHero() {
+  $('#heroForm').addEventListener('submit', e => { e.preventDefault(); talk($('#heroText').value); });
+  $('#heroMic').addEventListener('click', () => listen($('#heroText'), $('#heroMic'), talk));
+  document.addEventListener('data:changed', renderHero);
+}
