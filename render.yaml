@@ -1,0 +1,15 @@
+# One-click deploy on Render: New > Blueprint > pick this repo. Render asks you for OLLAMA_API_KEY.
+# The free plan has no persistent disk, so saved data resets when the service restarts or redeploys.
+# For permanent data switch to a paid plan and add:
+#   disk: { name: data, mountPath: /data, sizeGB: 1 }
+services:
+  - type: web
+    name: gigsaathi
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: OLLAMA_API_KEY
+        sync: false
+      - key: OLLAMA_MODEL
+        value: glm-5.3:cloud
