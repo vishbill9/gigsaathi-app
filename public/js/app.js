@@ -1,4 +1,5 @@
 // Entry point: wires every module together and loads the worker's saved data from the database.
+import { applyTranslations } from './translate.js';
 import { S, persist } from './state.js';
 import { HTML_LANG } from './i18n.js';
 import { $, toast } from './util.js';
@@ -27,6 +28,7 @@ function applyLang() {
   updateTabLabels();
   renderHero();
   renderSos();
+  applyTranslations(S.lang);
 }
 
 function applyEasyMode() {
