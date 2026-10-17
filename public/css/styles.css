@@ -238,3 +238,6 @@ dialog::backdrop { background: rgba(10, 20, 22, .75); }
   .logo { display: none; }
   .mood { width: 50px; height: 50px; }
 }
+
+.gbtn { background: #fff; color: #1f1f1f; border-color: #dadce0; gap: .55rem; }
+.gbtn img { display: block; }
