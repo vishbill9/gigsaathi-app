@@ -1,0 +1,14 @@
+{
+  "name": "gigsaathi",
+  "version": "1.0.0",
+  "description": "Multilingual GenAI companion for gig and informal workers: earnings, safety, rights, document help and grievance drafting.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
+  }
+}
