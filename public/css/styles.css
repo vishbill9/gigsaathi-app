@@ -239,5 +239,5 @@ dialog::backdrop { background: rgba(10, 20, 22, .75); }
   .mood { width: 50px; height: 50px; }
 }
 
-.gbtn { background: #fff; color: #1f1f1f; border-color: #dadce0; gap: .55rem; }
-.gbtn img { display: block; }
+.btn.gbtn { background: #fff; color: #1f1f1f; border-color: #dadce0; gap: .55rem; }
+.btn.gbtn img { display: block; }
