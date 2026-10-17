@@ -19,6 +19,7 @@ export const S = {
   ledger: [],
   moods: [],
   docSummary: '',
+  auth: { enabled: false, user: null },
   hist: {}, // per-module chat history for the current visit
 };
 
