@@ -11,6 +11,7 @@ import { systemPrompt } from './lib/prompts.js';
 import { parseEntry } from './lib/parse.js';
 import { routeText } from './lib/route.js';
 import { validateChat, validateText, validateEntry, validateMood, validateSummary } from './lib/validate.js';
+import { beginLogin, finishLogin, flowCookie, clearFlowCookie, readFlow, oauthEnabled } from './lib/oauth.js';
 import { readToken, hashToken, newToken, cookieHeader, clearCookieHeader } from './lib/session.js';
 import { SECURITY_HEADERS, sendJson, readJson, createLimiter, clientIp, loadStatic, serveStatic } from './lib/http.js';
 
@@ -88,9 +89,10 @@ export function createApp({ llm = ollama, store, aiLimiter, dataLimiter, publicD
     [/^\/api\/state$/, {
       GET({ req, res }) {
         const worker = findWorker(req);
+        const auth = { enabled: oauthEnabled(getConfig()), user: worker?.email ? { name: worker.name || worker.email, email: worker.email } : null };
         sendJson(res, 200, worker
-          ? { entries: db.listEntries(worker.id), moods: db.listMoods(worker.id), docSummary: worker.doc_summary }
-          : { entries: [], moods: [], docSummary: '' });
+          ? { entries: db.listEntries(worker.id), moods: db.listMoods(worker.id), docSummary: worker.doc_summary, auth }
+          : { entries: [], moods: [], docSummary: '', auth });
       },
     }],
     [/^\/api\/entries$/, {
@@ -133,6 +135,14 @@ export function createApp({ llm = ollama, store, aiLimiter, dataLimiter, publicD
         res.end(JSON.stringify(data, null, 2));
       },
     }],
+    [/^\/api\/logout$/, {
+      POST({ req, res }) {
+        const token = readToken(req);
+        if (token) db.endSession(hashToken(token));
+        res.setHeader('Set-Cookie', clearCookieHeader());
+        sendJson(res, 200, { ok: true });
+      },
+    }],
     [/^\/api\/me$/, {
       DELETE({ req, res }) {
         const worker = findWorker(req);
@@ -142,6 +152,41 @@ export function createApp({ llm = ollama, store, aiLimiter, dataLimiter, publicD
       },
     }],
   ];
+
+  // ---- Google sign-in (optional; guests keep working without it)
+  const redirectUri = (req, cfg) => `${cfg.publicUrl || `${isHttps(req) ? 'https' : 'http'}://${req.headers.host}`}/auth/google/callback`;
+  const goHome = (res, extra = []) => {
+    const prior = res.getHeader('Set-Cookie');
+    res.writeHead(302, { Location: '/', 'Cache-Control': 'no-store', 'Set-Cookie': [...(prior ? [].concat(prior) : []), ...extra] });
+    res.end();
+  };
+  async function handleAuth(req, res, pathname) {
+    const cfg = getConfig();
+    if (req.method !== 'GET') throw new HttpError(405, 'Use GET');
+    if (!oauthEnabled(cfg)) throw new HttpError(404, 'Google sign-in is not configured on this server.');
+    const ip = clientIp(req, cfg.trustProxy);
+    if (dataLimit.hit(ip)) throw new HttpError(429, 'Too many requests. Please wait a minute.');
+    if (pathname === '/auth/google') {
+      const { url, flow } = beginLogin(cfg, redirectUri(req, cfg));
+      res.writeHead(302, { Location: url, 'Cache-Control': 'no-store', 'Set-Cookie': flowCookie(flow, isHttps(req)) });
+      return res.end();
+    }
+    const query = new URL(req.url, 'http://localhost').searchParams;
+    const clear = clearFlowCookie();
+    try {
+      const profile = await finishLogin(cfg, redirectUri(req, cfg), query, readFlow(req));
+      const old = readToken(req);
+      const guest = old ? db.findWorkerByHash(hashToken(old)) : null;
+      const token = newToken();
+      db.signInGoogle(hashToken(token), profile, guest?.id ?? null);
+      if (old) db.endSession(hashToken(old));
+      return goHome(res, [cookieHeader(token, isHttps(req)), clear]);
+    } catch (e) {
+      if (!(e instanceof HttpError)) throw e;
+      res.writeHead(302, { Location: `/?auth_error=${encodeURIComponent(e.message)}`, 'Cache-Control': 'no-store', 'Set-Cookie': clear });
+      return res.end();
+    }
+  }
 
   async function handleApi(req, res, pathname) {
     const conf = getConfig();
@@ -182,6 +227,7 @@ export function createApp({ llm = ollama, store, aiLimiter, dataLimiter, publicD
     try {
       const { pathname } = new URL(req.url, 'http://localhost');
       if (pathname.startsWith('/api/')) return await handleApi(req, res, pathname);
+      if (pathname === '/auth/google' || pathname === '/auth/google/callback') return await handleAuth(req, res, pathname);
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed');
       const entry = statics.get(pathname);
       if (!entry) throw new HttpError(404, 'Not found');
