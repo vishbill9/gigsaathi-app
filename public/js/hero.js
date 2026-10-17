@@ -1,7 +1,7 @@
 // Hero: greeting plus "just talk": one box (or the mic) that routes to the right module.
 import { S } from './state.js';
 import { T } from './i18n.js';
-import { $ } from './util.js';
+import { $, toast } from './util.js';
 import { streak } from './logic.js';
 import { listen } from './voice.js';
 import { routeText } from './api.js';
@@ -25,6 +25,7 @@ async function talk(text) {
   const message = text.trim();
   if (!message) return;
   $('#heroText').value = '';
+  toast('Saathi is on it…');
   const route = await routeText(message);
   showTab(TAB_FOR[route.module] ?? 'saathi');
   if (route.log) {
@@ -34,10 +35,3 @@ async function talk(text) {
   }
   if (route.module === 'surprise') return surprise('RANDOM', message);
   await ask(route.module, message);
-}
-
-export function initHero() {
-  $('#heroForm').addEventListener('submit', e => { e.preventDefault(); talk($('#heroText').value); });
-  $('#heroMic').addEventListener('click', () => listen($('#heroText'), $('#heroMic'), talk));
-  document.addEventListener('data:changed', renderHero);
-}
