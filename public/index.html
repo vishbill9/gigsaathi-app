@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GigSaathi: a calm, multilingual AI friend for gig workers. Track earnings, stay safe, know your rights, understand documents and draft complaints.">
+  <meta name="theme-color" content="#0f766e">
+  <title>GigSaathi: your friend on the road</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <noscript><p class="card">GigSaathi needs JavaScript. In an emergency call Police 112 or Ambulance 108.</p></noscript>
+
+  <header class="top">
+    <div class="brand">
+      <button id="mascot" class="mascot" type="button" aria-label="Saathi, your friendly guide">🛵</button>
+      <span class="logo">Gig<b>Saathi</b></span>
+    </div>
+    <div class="controls">
+      <label class="sr" for="lang">Language</label>
+      <select id="lang">
+        <option value="en" lang="en">English</option>
+        <option value="hi" lang="hi">हिन्दी</option>
+        <option value="pa" lang="pa">ਪੰਜਾਬੀ</option>
+        <option value="hing" lang="en">Hinglish</option>
+      </select>
+      <button id="big" class="btn ghost" type="button" aria-pressed="false" title="Bigger text and replies read aloud">Aa Easy mode</button>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="greet">
+    <h1 id="greet" class="greet">Hello</h1>
+    <p id="tagline" class="tagline"></p>
+    <form id="heroForm" class="talk" autocomplete="off">
+      <label class="sr" for="heroText">Talk or type anything to Saathi</label>
+      <input id="heroText" type="text" maxlength="500" placeholder="Talk or type anything…">
+      <button id="heroMic" class="btn icon" type="button" aria-label="Speak to Saathi" aria-pressed="false">🎤</button>
+      <button class="btn primary" type="submit">Go</button>
+    </form>
+    <p class="hint">Try: “14 orders, ₹1850, petrol 300” or “my account was blocked”</p>
+  </section>
+
+  <nav id="tabs" class="tabs" role="tablist" aria-label="Sections"></nav>
+
+  <main id="main">
+    <section id="s-saathi" class="panel" role="tabpanel" aria-labelledby="t-saathi" tabindex="0">
+      <div class="card">
+        <h2>How are you feeling today?</h2>
+        <div id="moods" class="moods" role="group" aria-label="Pick your mood"></div>
+        <div id="careCard" class="care" hidden>
+          <p>A few heavy days? You are not alone, and talking to someone can really help.</p>
+          <a class="btn soft" href="tel:14416">Call Tele-MANAS 14416 (free)</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Something fun</h2>
+        <div class="chips">
+          <button id="btnSurprise" class="btn soft" type="button">🎁 Surprise me</button>
+          <button id="btnJoke" class="btn soft" type="button">😂 Make me laugh</button>
+          <button id="btnHype" class="btn soft" type="button">🔥 Hype me up</button>
+        </div>
+        <div id="surpriseCard" class="surprise" hidden aria-live="polite"></div>
+      </div>
+      <div class="card">
+        <h2>Chat with Saathi</h2>
+        <div id="box-buddy"></div>
+      </div>
+    </section>
+
+    <section id="s-earnings" class="panel" role="tabpanel" aria-labelledby="t-earnings" tabindex="0" hidden>
+      <div class="card">
+        <h2>Your money, made simple</h2>
+        <dl id="stats" class="stats"></dl>
+        <p id="reality" class="reality"></p>
+        <ul id="badges" class="badges" aria-label="Your badges"></ul>
+      </div>
+      <div class="card">
+        <h2>Last 7 days</h2>
+        <figure id="spark" class="spark"></figure>
+      </div>
+      <div class="card">
+        <h2>Add today</h2>
+        <form id="entryForm" class="row" autocomplete="off">
+          <label class="sr" for="entryText">Describe today's work, for example 14 orders, 1850 rupees, petrol 300</label>
+          <input id="entryText" type="text" maxlength="300" placeholder="14 orders, ₹1850, petrol ₹300">
+          <button id="micEntry" class="btn icon" type="button" aria-label="Speak your entry" aria-pressed="false">🎤</button>
+          <button id="addEntry" class="btn primary" type="submit">Add</button>
+        </form>
+        <p class="hint">Speak or type in any language. Saathi picks out the numbers. Entries are saved privately in a database, tied only to this device. No name, phone or email needed.</p>
+        <details class="more">
+          <summary>See all days</summary>
+          <div class="table-wrap"><table id="ledger"></table></div>
+          <div class="row wrap">
+            <a class="btn ghost" href="/api/export" download="gigsaathi-data.json">⬇ Download my data</a>
+            <button id="deleteData" class="btn ghost" type="button">🗑 Delete all my data</button>
+          </div>
+        </details>
+      </div>
+      <div class="card">
+        <h2>Ask your earnings coach</h2>
+        <div id="chips-earnings" class="chips"></div>
+        <div id="box-earnings"></div>
+      </div>
+    </section>
+
+    <section id="s-safety" class="panel" role="tabpanel" aria-labelledby="t-safety" tabindex="0" hidden>
+      <div class="card">
+        <h2>Ride safe, ride calm</h2>
+        <div id="chips-safety" class="chips"></div>
+        <div id="box-safety"></div>
+      </div>
+    </section>
+
+    <section id="s-rights" class="panel" role="tabpanel" aria-labelledby="t-rights" tabindex="0" hidden>
+      <div class="card">
+        <h2>🎯 Which schemes fit me?</h2>
+        <form id="quiz" class="quiz">
+          <div class="field"><label for="qAge">My age</label><input id="qAge" type="number" inputmode="numeric" min="14" max="80" required></div>
+          <div class="field"><label for="qInc">My monthly income</label>
+            <select id="qInc"><option value="lo">Up to ₹15,000</option><option value="hi">More than ₹15,000</option></select></div>
+          <label class="check"><input id="qEs" type="checkbox"> I already have an e-Shram card</label>
+          <label class="check"><input id="qBank" type="checkbox" checked> I have a bank account</label>
+          <button class="btn primary" type="submit">Check my schemes</button>
+        </form>
+        <ul id="qOut" class="results" aria-live="polite"></ul>
+      </div>
+      <div class="card">
+        <h2>Ask about your rights</h2>
+        <div id="chips-rights" class="chips"></div>
+        <div id="box-rights"></div>
+      </div>
+    </section>
+
+    <section id="s-docs" class="panel" role="tabpanel" aria-labelledby="t-docs" tabindex="0" hidden>
+      <div class="card">
+        <h2>Got a confusing message?</h2>
+        <p class="hint">Paste a notice, email or payout statement. Saathi explains it in simple words.</p>
+        <label class="sr" for="docText">Text of the document</label>
+        <textarea id="docText" rows="5" maxlength="3500" placeholder="Paste the text here…"></textarea>
+        <div class="row wrap">
+          <label class="btn ghost file" for="docFile">📎 Load a .txt file</label>
+          <input id="docFile" class="sr" type="file" accept=".txt,text/plain">
+          <button id="explainDoc" class="btn primary" type="button">Explain simply</button>
+        </div>
+        <p class="hint">Your summary is saved privately and reused if you write a complaint.</p>
+      </div>
+      <div class="card"><div id="box-docs"></div></div>
+    </section>
+
+    <section id="s-grievance" class="panel" role="tabpanel" aria-labelledby="t-grievance" tabindex="0" hidden>
+      <div class="card">
+        <h2>Let us write it together</h2>
+        <div class="field"><label for="gType">What is the problem?</label>
+          <select id="gType">
+            <option>Account deactivated or blocked</option>
+            <option>Payout short or missing</option>
+            <option>Wrong deduction or penalty</option>
+            <option>Incentive not paid</option>
+            <option>Unsafe working condition</option>
+            <option>Other</option>
+          </select></div>
+        <div class="field"><label for="gText">What happened?</label>
+          <textarea id="gText" rows="3" maxlength="1500" placeholder="Date, platform, amount if you know…"></textarea></div>
+        <div class="row wrap">
+          <button id="draftG" class="btn primary" type="button">Draft my complaint</button>
+          <button id="fillG" class="btn ghost" type="button">Add my earnings facts</button>
+        </div>
+        <p class="hint">Missing details show as [fill in]. Nothing is sent without you.</p>
+      </div>
+      <div class="card">
+        <div id="box-grievance"></div>
+        <div class="row wrap">
+          <button id="copyG" class="btn soft" type="button">Copy last reply</button>
+          <button id="waG" class="btn soft" type="button">Share on WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="s-sos" class="panel" role="tabpanel" aria-labelledby="t-sos" tabindex="0" hidden>
+      <div class="card sos">
+        <h2>You are not alone</h2>
+        <p>Tap a number to call. Help is one touch away.</p>
+        <div class="sos-grid">
+          <a class="sos-btn" href="tel:112"><b>112</b><span>Police and emergency</span></a>
+          <a class="sos-btn" href="tel:108"><b>108</b><span>Ambulance</span></a>
+          <a class="sos-btn" href="tel:181"><b>181</b><span>Women helpline</span></a>
+          <a class="sos-btn" href="tel:14416"><b>14416</b><span>Tele-MANAS, mental health</span></a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Let someone know where you are</h2>
+        <div class="stack">
+          <button id="btnLoc" class="btn primary" type="button">📍 Send my live location on WhatsApp</button>
+          <button id="btnFake" class="btn soft" type="button">📞 Fake call, to leave an uncomfortable situation</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>After an accident</h2>
+        <ol id="checklist" class="checklist"></ol>
+        <button id="btnAskSafety" class="btn soft" type="button">Ask Saathi for help</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Information only, not legal or medical advice. Emergency: <a href="tel:112">Police 112</a> · <a href="tel:108">Ambulance 108</a> · <a href="tel:14434">e-Shram 14434</a> · <a href="tel:14416">Tele-MANAS 14416</a></p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <dialog id="fake" aria-labelledby="fakeTitle">
+    <div class="call">
+      <div class="avatar" aria-hidden="true">🏠</div>
+      <h2 id="fakeTitle">Home</h2>
+      <p id="fakeStatus" role="status">Incoming call…</p>
+      <div class="call-actions">
+        <button id="fakeDecline" class="btn call-no" type="button">Decline</button>
+        <button id="fakeAccept" class="btn call-yes" type="button">Accept</button>
+        <button id="fakeEnd" class="btn call-no" type="button" hidden>End call</button>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>
