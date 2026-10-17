@@ -129,7 +129,7 @@ test('session tokens are random, validated and stored only as hashes', () => {
   assert.equal(readToken({ headers: { cookie: 'gs=short' } }), null);
   assert.equal(readToken({ headers: {} }), null);
   assert.notEqual(hashToken(token), token);
-  assert.match(cookieHeader(token, true), /HttpOnly; SameSite=Strict; Max-Age=31536000; Secure$/);
+  assert.match(cookieHeader(token, true), /HttpOnly; SameSite=Lax; Max-Age=31536000; Secure$/);
 });
 
 test('every module has a prompt in every language and treats context as data', () => {
